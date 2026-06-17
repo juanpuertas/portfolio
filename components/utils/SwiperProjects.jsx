@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme, Modal } from '@mui/material'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 // Import Swiper styles
@@ -8,6 +8,7 @@ import 'swiper/css/effect-cards';
 
 const SwiperProjects = ({listProjects, title}) => {
     const [currentImage, setCurrentImage] = useState(listProjects[0]);
+    const [modalImage, setModalImage] = useState(null);
     const theme = useTheme();
     //console.log('imagen actual', currentImage)
     const handleSlideChange = (swiper) => {
@@ -53,6 +54,7 @@ const SwiperProjects = ({listProjects, title}) => {
                                 component="img"
                                 src={project.imagePath}
                                 alt={project.name}
+                                onClick={() => setModalImage(project.imagePath)}
                                 sx={{
                                     width: '100%',
                                     height: '100%',
@@ -60,6 +62,7 @@ const SwiperProjects = ({listProjects, title}) => {
                                     position: 'absolute',
                                     top: 0,
                                     left: 0,
+                                    cursor: 'pointer' // Para indicar que es clicable
                                 }}
                             />
                             <Typography
@@ -80,6 +83,29 @@ const SwiperProjects = ({listProjects, title}) => {
                     </SwiperSlide>
                 ))}
             </Swiper>
+            <Modal
+                open={!!modalImage}
+                onClose={() => setModalImage(null)}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }}
+            >
+                <Box
+                    component="img"
+                    src={modalImage}
+                    alt="Vista en grande"
+                    sx={{
+                        maxWidth: '90vw',
+                        maxHeight: '90vh',
+                        objectFit: 'contain',
+                        outline: 'none',
+                        boxShadow: 24,
+                        borderRadius: 2
+                    }}
+                />
+            </Modal>
         </Box>
     );
 }
