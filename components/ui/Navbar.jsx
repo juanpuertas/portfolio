@@ -1,45 +1,71 @@
-import React from 'react'
-import { useRouter } from 'next/router'
-import { Box, Button, Grid, Typography } from '@mui/material'
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { Box, Button, Container, Drawer, IconButton, List, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { Menu as MenuIcon, Close } from '@mui/icons-material';
+
+const links = [
+    { label: 'Inicio', href: '/' },
+    { label: 'IA', href: '/#ai' },
+    { label: 'Experiencia', href: '/#experience' },
+    { label: 'Proyectos', href: '/#projects' },
+    { label: 'Contacto', href: '/contact' },
+];
 
 const Navbar = () => {
-    const { asPath, push } = useRouter();
+    const { asPath } = useRouter();
+    const [open, setOpen] = useState(false);
     return (
-        <Grid container display='flex' justifyContent='center' mt={3.5}>
-            <Grid item xs={12} sm={12} md={11} lg={11} xl={10}>
+        <Box component="header" sx={{ position: 'sticky', top: 0, zIndex: 1100, pt: 2 }}>
+            <Container maxWidth="lg">
                 <Box
-                    sx={{
-                        backgroundColor: '#1d1c22',
-                        p: 2,
-                        borderRadius: 1,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}
+                    component="nav"
+                    aria-label="Principal"
+                    className="glass"
+                    sx={{ px: 3, py: 1.25, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                 >
-                    <Box>
-                        <Typography variant='h4' color='primary' ml={2} onClick={() => { push('/') }} sx={{ cursor: 'pointer' }}>JuamPi</Typography>
-                    </Box>
-                    <Box sx={{ display: { xs: 'none', sm: 'none', md: 'flex' }, gap: 1 }}>
-                        <Button
-                            variant='text'
-                            onClick={() => push('/')}
-                            sx={{ color: 'primary.main' }}
-                        >
-                            Home
+                    <Typography component={Link} href="/" variant="h5" className="gradient-text" sx={{ fontWeight: 700 }}>
+                        JuamPi
+                    </Typography>
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, alignItems: 'center' }}>
+                        {links.map((l) => (
+                            <Button
+                                key={l.href}
+                                component={Link}
+                                href={l.href}
+                                color="inherit"
+                                aria-current={asPath === l.href ? 'page' : undefined}
+                                sx={{ color: asPath === l.href ? 'primary.main' : 'text.secondary', '&:hover': { color: 'text.primary', background: 'transparent' } }}
+                            >
+                                {l.label}
+                            </Button>
+                        ))}
+                        <Button href="/CVJuanPuertas.pdf" target="_blank" rel="noopener noreferrer" variant="contained" color="primary" size="small" sx={{ ml: 1 }}>
+                            Descargar CV
                         </Button>
-                        <Button
-                            variant='text'
-                            onClick={() => push('/contact')}
-                            sx={{ color: 'primary.main' }}
-                        >
-                            Contact Me
-                        </Button>
                     </Box>
+                    <IconButton aria-label="Abrir menú" onClick={() => setOpen(true)} sx={{ display: { md: 'none' } }}>
+                        <MenuIcon />
+                    </IconButton>
                 </Box>
-            </Grid>
-        </Grid>
-    )
-}
+            </Container>
+            <Drawer anchor="right" open={open} onClose={() => setOpen(false)} PaperProps={{ sx: { width: 260, p: 2 } }}>
+                <IconButton aria-label="Cerrar menú" onClick={() => setOpen(false)} sx={{ alignSelf: 'flex-end' }}>
+                    <Close />
+                </IconButton>
+                <List>
+                    {links.map((l) => (
+                        <ListItemButton key={l.href} component={Link} href={l.href} onClick={() => setOpen(false)}>
+                            <ListItemText primary={l.label} />
+                        </ListItemButton>
+                    ))}
+                    <ListItemButton component="a" href="/CVJuanPuertas.pdf" target="_blank" rel="noopener noreferrer">
+                        <ListItemText primary="Descargar CV" />
+                    </ListItemButton>
+                </List>
+            </Drawer>
+        </Box>
+    );
+};
 
-export default Navbar
+export default Navbar;

@@ -1,45 +1,21 @@
-import React from 'react'
-import { Box, Grid, Typography } from '@mui/material'
-import technologies from '@/utils/ListTecnhologies'
+import React from 'react';
+import { Box, Grid2, Typography } from '@mui/material';
+import technologies from '@/utils/ListTecnhologies';
 
-const ListTecnhologies = () => {
-    return (
-        <Box mt={2}>
-            <Typography variant="subtitle1" sx={{color:'#fff', fontSize:32}}>
-                Technologies
-            </Typography>
-            <Grid container spacing={1} mt={2}>
-                {technologies.map((tech, index) => (
-                    <Grid item xs={3} sm={4} md={1.5} key={tech.name}>
-                        <Box
-                            display="flex"
-                            flexDirection="column"
-                            alignItems="center"
-                            justifyContent="center"
-                            p={2}
-                            sx={{
-                                border: '1px solid white',
-                                borderRadius: {xs:0, sm:0, md:index === 0 ? '12px 0 0 12px' : index === technologies.length - 1 ? '0 12px 12px 0':''},
-                                transition: 'transform 0.3s ease-in-out',
-                                '&:hover': {
-                                    transform: 'scale(1.01)',
-                                    boxShadow: '0 0 3px 1px rgba(255, 255, 255, 0.5)',
-                                    border: '1px solid rgba(255, 255, 255, 0.8)',
-                                }
-                            }}
-                        >
-                            <Box
-                                component='img'
-                                src={tech.imagePath} 
-                                alt={tech.name} 
-                                style={{ width: '100%', height: '60px', objectFit: 'contain' }}
-                            />
-                        </Box>
-                    </Grid>
-                ))}
-            </Grid>
-        </Box>
-    )
-}
+const ListTecnhologies = () => (
+    <Box sx={{ mt: 10 }} className="reveal">
+        <Typography variant="overline" color="primary" sx={{ letterSpacing: 2 }}>Stack</Typography>
+        <Typography variant="h2" sx={{ fontSize: { xs: 28, md: 40 }, mb: 4 }}>Tecnologías</Typography>
+        <Grid2 container spacing={2}>
+            {technologies.map((tech) => (
+                <Grid2 key={tech.name} size={{ xs: 4, sm: 3, md: 1.5 }}>
+                    <Box className="glass card-hover" sx={{ p: 2, borderRadius: 3, display: 'grid', placeItems: 'center' }}>
+                        <Box component="img" src={tech.imagePath} alt={tech.name} loading="lazy" sx={{ width: '100%', height: 56, objectFit: 'contain' }} />
+                    </Box>
+                </Grid2>
+            ))}
+        </Grid2>
+    </Box>
+);
 
 export default ListTecnhologies;

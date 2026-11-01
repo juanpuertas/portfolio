@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Typography, useTheme, Modal } from '@mui/material'
+import { Box, Typography, Modal } from '@mui/material'
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 // Import Swiper styles
@@ -9,15 +9,14 @@ import 'swiper/css/effect-cards';
 const SwiperProjects = ({listProjects, title}) => {
     const [currentImage, setCurrentImage] = useState(listProjects[0]);
     const [modalImage, setModalImage] = useState(null);
-    const theme = useTheme();
     //console.log('imagen actual', currentImage)
     const handleSlideChange = (swiper) => {
         const currentIndex = swiper.activeIndex;
         setCurrentImage(listProjects[currentIndex]);
     };
     return (
-        <Box mt={5}>
-            <Typography variant="subtitle1" textAlign='center' sx={{ color: '#fff', fontSize: 32, mb: 2 }}>
+        <Box sx={{ mt: 10 }} className="reveal">
+            <Typography variant="h2" textAlign='center' sx={{ fontSize: { xs: 26, md: 36 }, mb: 4 }}>
                 {title}
             </Typography>
             <Swiper
@@ -26,18 +25,16 @@ const SwiperProjects = ({listProjects, title}) => {
                 modules={[EffectCards]}
                 onSlideChange={handleSlideChange}
                 className="mySwiper"
-                style={{
-                    width: theme.breakpoints.down('sm') ? '300px' : '620px',
-                    height: theme.breakpoints.down('sm') ? '200px' : '320px',
-                    //margin: '0px'
-                }}
+                style={{ width: 'min(620px, 100%)', aspectRatio: '16 / 10', height: 'auto' }}
             >
                 {listProjects.map((project, index) => (
                     <SwiperSlide 
                         key={index} 
                         style={{
                             borderRadius: 10,
-                            overflow: 'hidden' // Asegura que la imagen no sobresalga del borde redondeado
+                            overflow: 'hidden',
+                            background: '#14141c',
+                            border: '1px solid rgba(255,255,255,0.08)'
                         }}
                     >
                         <Box
@@ -54,6 +51,7 @@ const SwiperProjects = ({listProjects, title}) => {
                                 component="img"
                                 src={project.imagePath}
                                 alt={project.name}
+                                loading="lazy"
                                 onClick={() => setModalImage(project.imagePath)}
                                 sx={{
                                     width: '100%',
@@ -73,7 +71,7 @@ const SwiperProjects = ({listProjects, title}) => {
                                     p: 1,
                                     color: '#fff',
                                     textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                                    backgroundColor: 'rgba(0,0,0,0.5)', // Fondo semi-transparente para mejorar la legibilidad
+                                    backgroundColor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(6px)', // Fondo semi-transparente para mejorar la legibilidad
                                     width: '100%'
                                 }}
                             >

@@ -15,7 +15,8 @@ const Scene = () => {
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, currentMount.clientWidth / currentMount.clientHeight, 0.1, 1000);
 
-        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setClearColor(0x000000, 0);
         renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
         currentMount.appendChild(renderer.domElement);
@@ -47,9 +48,7 @@ const Scene = () => {
                     action.play();
                 }
             },
-            (xhr) => {
-                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-            },
+            undefined,
             (error) => {
                 console.error('An error happened', error);
             }
@@ -64,13 +63,14 @@ const Scene = () => {
         scene.add(directionalLight);
         
         const clock = new THREE.Clock();
+        let frame;
         const animate = () => {
             const delta = clock.getDelta();
             if (mixerRef.current) {
                 mixerRef.current.update(delta);
             }
             renderer.render(scene, camera);
-            requestAnimationFrame(animate);
+            frame = requestAnimationFrame(animate);
         };
 
         animate();
@@ -85,6 +85,8 @@ const Scene = () => {
 
         // Limpieza
         return () => {
+            cancelAnimationFrame(frame);
+            controls.dispose();
             window.removeEventListener('resize', handleResize);
             renderer.dispose();
             currentMount.removeChild(renderer.domElement);
@@ -92,7 +94,7 @@ const Scene = () => {
     }, []);
 
     return (
-        <Box className="Contenedor3D" ref={mountRef} style={{width:'100%', height:'600px', background: 'transparent'}}>
+        <Box className="Contenedor3D" ref={mountRef} style={{width:'100%', height:'clamp(320px, 55vh, 560px)', background: 'transparent'}}>
         </Box>
     )
 }
