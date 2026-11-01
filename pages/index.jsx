@@ -28,8 +28,8 @@ const IndexPage = () => (
                         {profile.summary}
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2, mt: 4, flexWrap: 'wrap' }}>
-                        <Button component={Link} href="/contact" variant="contained" color="primary" endIcon={<ArrowForward />}>
-                            Trabajemos juntos
+                        <Button component={Link} href="/planner" variant="contained" color="primary" endIcon={<ArrowForward />}>
+                            Planifica tu proyecto con IA
                         </Button>
                         <Button component={Link} href="/#ai" variant="outlined" color="inherit" startIcon={<SmartToy />} sx={{ borderColor: 'divider' }}>
                             Ver habilidades de IA

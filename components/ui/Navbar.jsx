@@ -9,6 +9,7 @@ const links = [
     { label: 'IA', href: '/#ai' },
     { label: 'Experiencia', href: '/#experience' },
     { label: 'Proyectos', href: '/#projects' },
+    { label: 'Planificador', href: '/planner' },
     { label: 'Contacto', href: '/contact' },
 ];
 

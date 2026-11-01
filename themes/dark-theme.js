@@ -1,5 +1,4 @@
 import { createTheme } from '@mui/material/styles';
-import { esES } from '@mui/x-data-grid';
 
 const font = 'var(--font-inter), system-ui, -apple-system, Segoe UI, sans-serif';
 const display = 'var(--font-display), var(--font-inter), system-ui, sans-serif';
@@ -47,6 +46,5 @@ export const darkTheme = createTheme(
       MuiPaper: { styleOverrides: { root: { backgroundImage: 'none' } } },
       MuiChip: { styleOverrides: { root: { fontWeight: 500 } } },
     },
-  },
-  esES
+  }
 );

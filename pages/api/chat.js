@@ -1,39 +1,10 @@
+import { createLimiter, clientIp, sameOrigin, callDeepSeek } from '@/utils/apiSecurity';
 import { buildKnowledge, profile, aiSkills, technologies } from '@/utils/profile';
 
 // ───────── Límites y seguridad ─────────
 const MAX_MESSAGES = 10;
 const MAX_CHARS = 600;
-const RATE_LIMIT = 12; // peticiones
-const RATE_WINDOW_MS = 60_000;
-const MODEL = process.env.DEEPSEEK_MODEL || 'deepseek-chat';
-
-// Rate limit en memoria (por instancia). Para producción multi-instancia usar Redis/Upstash.
-const hits = new Map();
-function rateLimited(ip) {
-    const now = Date.now();
-    const list = (hits.get(ip) || []).filter((t) => now - t < RATE_WINDOW_MS);
-    list.push(now);
-    hits.set(ip, list);
-    if (hits.size > 5000) {
-        for (const [k, v] of hits) if (!v.some((t) => now - t < RATE_WINDOW_MS)) hits.delete(k);
-    }
-    return list.length > RATE_LIMIT;
-}
-
-function clientIp(req) {
-    const fwd = req.headers['x-forwarded-for'];
-    return (typeof fwd === 'string' ? fwd.split(',')[0].trim() : req.socket?.remoteAddress) || 'unknown';
-}
-
-function sameOrigin(req) {
-    const origin = req.headers.origin;
-    if (!origin) return true; // llamadas same-origin sin cabecera Origin
-    try {
-        return new URL(origin).host === req.headers.host;
-    } catch {
-        return false;
-    }
-}
+const rateLimited = createLimiter(12);
 
 function sanitize(messages) {
     if (!Array.isArray(messages) || messages.length === 0) return null;
@@ -92,33 +63,11 @@ export default async function handler(req, res) {
     const messages = sanitize(req.body?.messages);
     if (!messages) return res.status(400).json({ error: 'Mensaje inválido' });
 
-    const apiKey = process.env.DEEPSEEK_API_KEY;
-    if (!apiKey) {
-        return res.status(200).json({ reply: localAnswer(messages[messages.length - 1].content), mode: 'local' });
-    }
-
     try {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 20_000);
-        const r = await fetch('https://api.deepseek.com/chat/completions', {
-            method: 'POST',
-            signal: controller.signal,
-            headers: {
-                'content-type': 'application/json',
-                authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-                model: MODEL,
-                max_tokens: 400,
-                temperature: 0.4,
-                messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
-            }),
-        });
-        clearTimeout(timer);
-        if (!r.ok) throw new Error(`upstream ${r.status}`);
-        const data = await r.json();
-        const reply = data.choices?.[0]?.message?.content?.trim();
-        if (!reply) throw new Error('empty reply');
+        const reply = await callDeepSeek({ system: SYSTEM_PROMPT, messages });
+        if (!reply) {
+            return res.status(200).json({ reply: localAnswer(messages[messages.length - 1].content), mode: 'local' });
+        }
         return res.status(200).json({ reply, mode: 'ai' });
     } catch (err) {
         console.error('[chat]', err.message); // nunca se devuelve el detalle al cliente
